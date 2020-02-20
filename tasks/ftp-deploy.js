@@ -97,7 +97,7 @@ module.exports = function (grunt) {
       cb(new Error('Data for ' + inPath + ' not found'));
     }
 
-    await ftpCwd(path.normalize('/' + remoteRoot + '/' + inPath).replace(/\\/gi, '/'), function (err) {
+    await ftpCwd(path.normalize('/' + remoteRoot + '/' + inPath).replace(/\\/gi, '/'), async function (err) {
       var files;
 
       if (err) {
