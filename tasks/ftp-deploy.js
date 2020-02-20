@@ -144,6 +144,7 @@ module.exports = function (grunt) {
 
     // Init
     ftpClient = new Ftp.Client();
+    var ftpHost = this.data.auth.host;
     ftpClient.ftp.verbose = true;
 
     localRoot = Array.isArray(this.data.src) ? this.data.src[0] : this.data.src;
@@ -168,7 +169,7 @@ module.exports = function (grunt) {
       // Authentication and main processing of files
       try {
         await ftpClient.access({
-          host: this.data.auth.host,
+          host: ftpHost,
           user: authVals.username,
           password: authVals.password,
           secure: false
