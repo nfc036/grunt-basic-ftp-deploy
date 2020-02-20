@@ -73,14 +73,14 @@ module.exports = function (grunt) {
   }
 
   // A method for changing the remote working directory and creating one if it doesn't already exist
-  function ftpCwd (inPath, cb) {
+  async function ftpCwd (inPath, cb) {
     await ftpClient.ensureDir(inPath);
     await ftpClient.cd(inPath);
     cb(null);
   }
 
   // A method for uploading a single file
-  function ftpPut (inFilename, done) {
+  async function ftpPut (inFilename, done) {
     var fpath = path.normalize(localRoot + path.sep + currPath + path.sep + inFilename);
     await ftpClient.uploadFrom(fpath, inFilename);
     if (forceVerbose) {
@@ -139,7 +139,7 @@ module.exports = function (grunt) {
   }
 
   // The main grunt task
-  grunt.registerMultiTask('ftp-deploy', 'Deploy code over FTP', function () {
+  grunt.registerMultiTask('ftp-deploy', 'Deploy code over FTP', async function () {
     var done = this.async();
 
     // Init
