@@ -177,13 +177,14 @@ module.exports = function (grunt) {
         var locations = _.keys(toTransfer);
 
         // Iterating through all location from the `localRoot` in parallel
-        async.eachSeries(locations, ftpProcessLocation, function () {
+        await async.eachSeries(locations, ftpProcessLocation, function () {
           log.ok('FTP upload done!');
           done();
         });
       } catch (err) {
         log.error(err);
       }
+      log.ok('calling ftpClient.close()');
       ftpClient.close();
 
       if (grunt.errors) {
