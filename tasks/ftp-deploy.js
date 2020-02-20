@@ -92,12 +92,12 @@ module.exports = function (grunt) {
   }
 
   // A method that processes a location - changes to a folder and uploads all respective files
-  function ftpProcessLocation (inPath, cb) {
+  async function ftpProcessLocation (inPath, cb) {
     if (!toTransfer[inPath]) {
       cb(new Error('Data for ' + inPath + ' not found'));
     }
 
-    ftpCwd(path.normalize('/' + remoteRoot + '/' + inPath).replace(/\\/gi, '/'), function (err) {
+    await ftpCwd(path.normalize('/' + remoteRoot + '/' + inPath).replace(/\\/gi, '/'), function (err) {
       var files;
 
       if (err) {
@@ -107,7 +107,7 @@ module.exports = function (grunt) {
       currPath = inPath;
       files = toTransfer[inPath];
 
-      async.eachSeries(files, ftpPut, function (err) {
+      await async.eachSeries(files, ftpPut, function (err) {
         if (err) {
           grunt.warn('Failed uploading files!');
         }
