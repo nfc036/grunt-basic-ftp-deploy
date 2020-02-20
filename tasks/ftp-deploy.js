@@ -129,10 +129,6 @@ module.exports = function (grunt) {
   grunt.registerMultiTask('ftp-deploy', 'Deploy code over FTP', async function () {
     var done = this.async();
 
-    // Init
-    ftpClient = new Ftp.Client();
-    var ftpHost = this.data.auth.host;
-    ftpClient.ftp.verbose = true;
 
     localRoot = Array.isArray(this.data.src) ? this.data.src[0] : this.data.src;
     remoteRoot = Array.isArray(this.data.dest) ? this.data.dest[0] : this.data.dest;
@@ -142,6 +138,11 @@ module.exports = function (grunt) {
     toTransfer = dirParseSync(localRoot);
     forceVerbose = this.data.forceVerbose === true ? true : false;
 
+    // Init
+    ftpClient = new Ftp.Client();
+    var ftpHost = this.data.auth.host;
+    ftpClient.ftp.verbose = this.data.debugFtpClient === true ? true : false;
+    
     // Getting all the necessary credentials before we proceed
     var needed = {properties: {}};
     if (!authVals.username) needed.properties.username = {};
