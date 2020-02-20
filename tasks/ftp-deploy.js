@@ -158,7 +158,7 @@ module.exports = function (grunt) {
     var needed = {properties: {}};
     if (!authVals.username) needed.properties.username = {};
     if (!authVals.password) needed.properties.password = {hidden:true};
-    prompt.get(needed, function (err, result) {
+    prompt.get(needed, async function (err, result) {
       if (err) {
         grunt.warn('Authentication ' + err);
       }
