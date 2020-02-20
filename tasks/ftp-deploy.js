@@ -18,11 +18,11 @@ module.exports = function (grunt) {
   var file = grunt.file;
   var fs = require('fs');
   var path = require('path');
-  var Ftp = require('jsftp');
+  var Ftp = require('basic-ftp');
   var prompt = require('prompt');
 
   var toTransfer;
-  var ftp;
+  var ftpClient;
   var localRoot;
   var remoteRoot;
   var currPath;
@@ -74,39 +74,21 @@ module.exports = function (grunt) {
 
   // A method for changing the remote working directory and creating one if it doesn't already exist
   function ftpCwd (inPath, cb) {
-    ftp.raw('cwd', inPath, function (err) {
-      if(err){
-        ftp.raw('mkd', inPath, function (err) {
-          if(err) {
-            log.error('Error creating new remote folder ' + inPath + ' --> ' + err);
-            cb(err);
-          } else {
-            log.ok('New remote folder created ' + inPath.yellow);
-            ftpCwd(inPath, cb);
-          }
-        });
-      } else {
-        cb(null);
-      }
-    });
+    await ftpClient.ensureDir(inPath);
+    await ftpClient.cd(inPath);
+    cb(null);
   }
 
   // A method for uploading a single file
   function ftpPut (inFilename, done) {
     var fpath = path.normalize(localRoot + path.sep + currPath + path.sep + inFilename);
-    ftp.put(fpath, inFilename, function (err) {
-      if (err) {
-        log.error('Cannot upload file: ' + inFilename + ' --> ' + err);
-        done(err);
-      } else {
-        if (forceVerbose) {
-          log.ok('Uploaded file: ' + inFilename.green + ' to: ' + currPath.yellow);
-        } else {
-          verbose.ok('Uploaded file: ' + inFilename.green + ' to: ' + currPath.yellow);
-        }
-        done(null);
-      }
-    });
+    await ftpClient.uploadFrom(fpath, inFilename);
+    if (forceVerbose) {
+      log.ok('Uploaded file: ' + inFilename.green + ' to: ' + currPath.yellow);
+    } else {
+      verbose.ok('Uploaded file: ' + inFilename.green + ' to: ' + currPath.yellow);
+    }
+    done(null);
   }
 
   // A method that processes a location - changes to a folder and uploads all respective files
@@ -161,17 +143,14 @@ module.exports = function (grunt) {
     var done = this.async();
 
     // Init
-    ftp = new Ftp({
-      host: this.data.auth.host,
-      port: this.data.auth.port,
-      onError: done
-    });
+    ftpClient = new Ftp.Client();
+    ftpClient.ftp.verbose = true;
 
     localRoot = Array.isArray(this.data.src) ? this.data.src[0] : this.data.src;
     remoteRoot = Array.isArray(this.data.dest) ? this.data.dest[0] : this.data.dest;
     authVals = getAuthVals(this.data.auth);
     exclusions = this.data.exclusions || [];
-    ftp.useList = true;
+//    ftp.useList = true;
     toTransfer = dirParseSync(localRoot);
     forceVerbose = this.data.forceVerbose === true ? true : false;
 
@@ -187,24 +166,24 @@ module.exports = function (grunt) {
       if (result.password) authVals.password = result.password;
 
       // Authentication and main processing of files
-      ftp.auth(authVals.username, authVals.password, function (err) {
+      try {
+        await ftpClient.access({
+          host: this.data.auth.host,
+          user: authVals.username,
+          password: authVals.password,
+          secure: false
+          });
         var locations = _.keys(toTransfer);
-        if (err) {
-          grunt.warn('Authentication ' + err);
-        }
 
         // Iterating through all location from the `localRoot` in parallel
         async.eachSeries(locations, ftpProcessLocation, function () {
-          ftp.raw('quit', function (err) {
-            if (err) {
-              log.error(err);
-            } else {
-              log.ok('FTP upload done!');
-            }
-            done();
-          });
+          log.ok('FTP upload done!');
+          done();
         });
-      });
+      } catch (err) {
+        log.error(err);
+      }
+      ftpClient.close();
 
       if (grunt.errors) {
         return false;
