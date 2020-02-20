@@ -73,14 +73,13 @@ module.exports = function (grunt) {
   }
 
   // A method for changing the remote working directory and creating one if it doesn't already exist
-  async function ftpCwd (inPath, cb) {
+  async function ftpCwd (inPath) {
     await ftpClient.ensureDir(inPath);
     await ftpClient.cd(inPath);
-    cb(null);
   }
 
   // A method for uploading a single file
-  async function ftpPut (inFilename, done) {
+  async function ftpPut (inFilename) {
     var fpath = path.normalize(localRoot + path.sep + currPath + path.sep + inFilename);
     await ftpClient.uploadFrom(fpath, inFilename);
     if (forceVerbose) {
@@ -88,32 +87,20 @@ module.exports = function (grunt) {
     } else {
       verbose.ok('Uploaded file: ' + inFilename.green + ' to: ' + currPath.yellow);
     }
-    done(null);
   }
 
   // A method that processes a location - changes to a folder and uploads all respective files
-  async function ftpProcessLocation (inPath, cb) {
+  async function ftpProcessLocation (inPath) {
     if (!toTransfer[inPath]) {
       cb(new Error('Data for ' + inPath + ' not found'));
     }
 
-    await ftpCwd(path.normalize('/' + remoteRoot + '/' + inPath).replace(/\\/gi, '/'), async function (err) {
-      var files;
-
-      if (err) {
-        grunt.warn('Could not switch to remote folder!');
-      }
-
-      currPath = inPath;
-      files = toTransfer[inPath];
-
-      await async.eachSeries(files, ftpPut, function (err) {
-        if (err) {
-          grunt.warn('Failed uploading files!');
-        }
-        cb(null);
-      });
-    });
+    await ftpCwd(path.normalize('/' + remoteRoot + '/' + inPath).replace(/\\/gi, '/'));
+    currPath = inPath;
+    var files = toTransfer[inPath];
+    for (var i=0;i<files.length;i++) {
+      await ftpPut(files[i]);
+    }
   }
 
   function getAuthVals(inAuth) {
@@ -177,10 +164,11 @@ module.exports = function (grunt) {
         var locations = _.keys(toTransfer);
 
         // Iterating through all location from the `localRoot` in parallel
-        await async.eachSeries(locations, ftpProcessLocation, function () {
-          log.ok('FTP upload done!');
-          done();
-        });
+        for (var i=0;i<locations.length;i++) {
+          await ftpProcessLocation(locations[i]);
+        }
+        log.ok('FTP upload done!');
+        done();
       } catch (err) {
         log.error(err);
       }
