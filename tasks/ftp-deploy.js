@@ -126,7 +126,7 @@ module.exports = function (grunt) {
   }
 
   // The main grunt task
-  grunt.registerMultiTask('ftp-deploy', 'Deploy code over FTP', async function () {
+  grunt.registerMultiTask('basic-ftp-deploy', 'Deploy code over FTP using basic-ftp', async function () {
     var done = this.async();
 
 
