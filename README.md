@@ -1,6 +1,14 @@
-# grunt-ftp-deploy [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][depstat-image]][depstat-url]
+# grunt-basic-ftp-deploy
 
 This is a [grunt](https://github.com/gruntjs/grunt) task for code deployment over the _ftp_ protocol.
+
+**This is a fork of [grunt-ftp-deploy](https://github.com/zonak/grunt-ftp-deploy), which did not work in my use case when the nodejs version was updated to 12.x. In this fork the FTP functionality was changed from [jsftp](https://github.com/sergi/jsftp) to [basic-ftp](https://github.com/patrickjuchli/basic-ftp).**
+
+The current version works for my use case. But there is plenty of room for improvements, e.g. the error handling is marginal. In addition, [basic-ftp](https://github.com/patrickjuchli/basic-ftp) offers some extended functionality compared to [jsftp](https://github.com/sergi/jsftp), which is not yet considered (not configurable from Gruntfile.js).
+
+The rest of this README is based on the original fork, with only `grunt-ftp-deploy` replaced by `grunt-basic-ftp-deploy`.
+
+## Original README
 
 These days _git_ is not only our goto code management tool but in many cases our deployment tool as well. But there are many cases where _git_ is not really fit for deployment:
 
@@ -18,13 +26,13 @@ This plugin requires Grunt `~0.4.0`
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
 
 ```shell
-npm install grunt-ftp-deploy --save-dev
+npm install nfc036/grunt-basic-ftp-deploy --save-dev
 ```
 
 and load the task:
 
 ```javascript
-grunt.loadNpmTasks('grunt-ftp-deploy');
+grunt.loadNpmTasks('grunt-basic-ftp-deploy');
 ```
 
 ## Usage
@@ -32,7 +40,7 @@ grunt.loadNpmTasks('grunt-ftp-deploy');
 To use this task you will need to include the following configuration in your _grunt_ file:
 
 ```javascript
-'ftp-deploy': {
+'basic-ftp-deploy': {
   build: {
     auth: {
       host: 'server.com',
@@ -84,27 +92,8 @@ The task prompts for credentials that are not found in the credentials file and 
 
 ## Dependencies
 
-This task is built by taking advantage of the great work of Sergi Mansilla and his [jsftp](https://github.com/sergi/jsftp) _node.js_ module and suited for the **0.4.x** branch of _grunt_.
+This task is built by taking advantage of the great work of Patrick Juchli and his [basic-ftp](https://github.com/patrickjuchli/basic-ftp) _node.js_ module and suited for the **0.4.x** branch of _grunt_.
 
 ## Release History
 
- * 2017-11-07    v0.2.0    Dependency updates.
- * 2015-02-04    v0.1.10   An option to force output verbosity.
- * 2014-10-22    v0.1.9    Log successful uploads only in verbose mode.
- * 2014-10-13    v0.1.8    Allow empty strings to be used as login details.
- * 2014-09-03    v0.1.7    Restructured the code deailing with the authentication values to address some issues.
- * 2014-08-20    v0.1.6    Bug fix with the modules updates.
- * 2014-08-20    v0.1.5    Refresh of versions of used modules.
- * 2014-07-28    v0.1.4    Added a `authPath` configuration option.
- * 2014-05-05    v0.1.3    Added warning if an `authKey` is provided and no `.ftppass` is found.
- * 2013-11-22    v0.1.1    Added compatibility with `grunt` _0.4.2_ and switched to `jsftp` _1.2.x_.
- * 2013-08-26    v0.1.0    Switched to `jsftp` _1.1.x_.
-
-[npm-url]: https://npmjs.org/package/grunt-ftp-deploy
-[npm-image]: https://badge.fury.io/js/grunt-ftp-deploy.png
-
-[travis-url]: http://travis-ci.org/zonak/grunt-ftp-deploy
-[travis-image]: https://secure.travis-ci.org/zonak/grunt-ftp-deploy.png?branch=master
-
-[depstat-url]: https://david-dm.org/zonak/grunt-ftp-deploy
-[depstat-image]: https://david-dm.org/zonak/grunt-ftp-deploy.png
+ * 2020-02-20    v0.1.0    First version based on zonak/grunt-ftp-deploy v0.2.0 (7 Nov 2017)
