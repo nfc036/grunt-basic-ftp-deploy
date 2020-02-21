@@ -2,7 +2,7 @@
 
 This is a [grunt](https://github.com/gruntjs/grunt) task for code deployment over the _ftp_ protocol.
 
-**This is a fork of [grunt-ftp-deploy](https://github.com/zonak/grunt-ftp-deploy), which did not work in my use case when the nodejs version was updated to 12.x. In this fork the FTP functionality was changed from [jsftp](https://github.com/sergi/jsftp) to [basic-ftp](https://github.com/patrickjuchli/basic-ftp).**
+**This is a fork of [grunt-ftp-deploy](https://github.com/zonak/grunt-ftp-deploy), which did not work in my use case when the nodejs version was updated to 12.x. In this fork the underlying FTP library was changed from [jsftp](https://github.com/sergi/jsftp) to [basic-ftp](https://github.com/patrickjuchli/basic-ftp).**
 
 The current version works for my use case. But there is plenty of room for improvements, e.g. the error handling is marginal. In addition, [basic-ftp](https://github.com/patrickjuchli/basic-ftp) offers some extended functionality compared to [jsftp](https://github.com/sergi/jsftp), which is not yet considered (not configurable from Gruntfile.js).
 
