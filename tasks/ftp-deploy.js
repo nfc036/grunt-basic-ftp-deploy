@@ -173,7 +173,6 @@ module.exports = function (grunt) {
       } catch (err) {
         log.error(err);
       }
-      log.ok('calling ftpClient.close()');
       ftpClient.close();
 
       if (grunt.errors) {
