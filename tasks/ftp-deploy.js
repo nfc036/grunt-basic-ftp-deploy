@@ -132,6 +132,7 @@ module.exports = function (grunt) {
 
     localRoot = Array.isArray(this.data.src) ? this.data.src[0] : this.data.src;
     remoteRoot = Array.isArray(this.data.dest) ? this.data.dest[0] : this.data.dest;
+    remotePort = (this.data.auth.port) ? this.data.auth.port : 21;
     authVals = getAuthVals(this.data.auth);
     exclusions = this.data.exclusions || [];
 //    ftp.useList = true;
@@ -160,6 +161,7 @@ module.exports = function (grunt) {
           host: ftpHost,
           user: authVals.username,
           password: authVals.password,
+          port: remotePort,
           secure: false
           });
         var locations = _.keys(toTransfer);
